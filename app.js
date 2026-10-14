@@ -593,11 +593,11 @@ document.addEventListener('DOMContentLoaded', () => {
       data: {
         id: 'node_H',
         parent: 'sec_futuro',
-        label: 'H. Cuidado hacia 2040: Bifurcación\n───────────────────────────────────────\n⚠️ RIESGO INERCIAL: Déficit 570k cuidadores,\ncuidados fríos y "refugiados del cuidado" (Kaigo Nanmin)\n✨ MODELO JNA 2040: Sinergia High-Tech & High-Touch,\nexoesqueletos sin burocracia y buen morir (Mitori)',
-        nodeType: 'rhomboid_green',
+        label: 'H. Cuidado hacia 2040: Bifurcación\n─────────────────────────────────────────────\n⚠️ RIESGO INERCIAL: Déficit 570k cuidadores,\ncuidados fríos y "refugiados del cuidado" (Kaigo Nanmin)\n✨ MODELO JNA 2040: Sinergia High-Tech & High-Touch,\nexoesqueletos sin burocracia y buen morir (Mitori)',
+        nodeType: 'prospectiva_card',
         icon: '👁️'
       },
-      position: { x: 4470, y: 640 }
+      position: { x: 4520, y: 640 }
     },
 
     // ----------------- ARISTAS: FLUJO PRINCIPAL SÓLIDO --------------------
@@ -910,22 +910,28 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     },
 
-    // Nodo H: Romboide (paralelogramo) verde bosque
+    // Nodo H: Tarjeta de Prospectiva 2040 (Rectángulo redondeado amplio y de máximo contraste)
     {
-      selector: '[nodeType = "rhomboid_green"]',
+      selector: '[nodeType = "prospectiva_card"], [nodeType = "rhomboid_green"]',
       style: {
-        'shape': 'rhomboid',
-        'background-color': '#399e56',
-        'border-color': '#216a37',
-        'border-width': 3.5,
-        'color': '#ffffff',
-        'width': '500px',
-        'height': '300px',
-        'text-max-width': '410px',
-        'font-size': '14.5px',
-        'shadow-blur': 16,
-        'shadow-color': 'rgba(0, 0, 0, 0.18)',
-        'shadow-offset-y': 4
+        'shape': 'round-rectangle',
+        'corner-radius': '22px',
+        'background-color': '#14532d', // Verde bosque profundo (máximo contraste WCAG AAA > 11:1)
+        'border-color': '#22c55e',     // Borde esmeralda vibrante de 4px
+        'border-width': 4,
+        'color': '#ffffff',            // Tipografía blanca pura, nítida y legible
+        'font-weight': '700',
+        'font-size': '15px',
+        'line-height': 1.45,
+        'width': '580px',              // Ampliado de 500px a 580px para holgura total
+        'height': '340px',             // Ampliado de 300px a 340px para acomodar todo el texto
+        'text-max-width': '530px',     // Permite líneas de hasta 56 caracteres sin cortes bruscos
+        'text-outline-color': '#052e16',
+        'text-outline-width': 1.2,
+        'text-outline-opacity': 0.9,
+        'shadow-blur': 20,
+        'shadow-color': 'rgba(0, 0, 0, 0.22)',
+        'shadow-offset-y': 5
       }
     },
 
