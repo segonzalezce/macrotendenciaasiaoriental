@@ -1,0 +1,912 @@
+/* ==========================================================================
+   ESTILOS: MAPA CONCEPTUAL INTERACTIVO - ASIA ORIENTAL (CYTOSCAPE.JS)
+   Inspirado en la estructura de "LA BRÚJULA DE NUESTRA REGIÓN"
+   Actualizado con "Rol Actual y Prospectiva del Cuidado de Enfermería hacia 2040"
+   ========================================================================== */
+
+:root {
+  --bg-canvas: #f8fafc;
+  --grid-line: rgba(203, 213, 225, 0.55);
+  --title-color: #0f2b48;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  
+  /* Paleta Secciones */
+  --sec-base-bg: #eaf0f8;
+  --sec-base-border: #adc3dd;
+  --sec-base-text: #1e3a5f;
+  
+  --sec-actual-bg: #fdf7e7;
+  --sec-actual-border: #e6d299;
+  --sec-actual-text: #78350f;
+  
+  --sec-futuro-bg: #ebf6ee;
+  --sec-futuro-border: #b0d7b5;
+  --sec-futuro-text: #14532d;
+  
+  /* Paleta Nodos */
+  --node-blue: #46749e;
+  --node-blue-border: #284e70;
+  
+  --node-yellow: #f6c944;
+  --node-yellow-border: #cb9413;
+  --node-yellow-text: #382303;
+  
+  --node-amber: #f5c342;
+  --node-amber-border: #cb9413;
+  
+  --node-red: #df5656;
+  --node-red-border: #b72b2b;
+  
+  --node-green-bright: #2ca858;
+  --node-green-border: #1a7538;
+  
+  --node-green-dark: #399e56;
+  --node-green-dark-border: #216a37;
+  
+  --edge-color: #334155;
+  --edge-dashed-color: #64748b;
+  
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --shadow-modal: 0 25px 60px -15px rgba(15, 23, 42, 0.35);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  color: var(--text-dark);
+  background-color: var(--bg-canvas);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   CABECERA PRINCIPAL (ESTILO BRÚJULA)
+   ========================================================================== */
+.app-header {
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  padding: 12px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 20;
+  box-shadow: var(--shadow-sm);
+  flex-shrink: 0;
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-title {
+  font-family: 'Cinzel', 'Playfair Display', Georgia, serif;
+  font-size: 1.55rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--title-color);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.region-underline {
+  border-bottom: 3.5px solid #16325c;
+  padding-bottom: 2px;
+  color: #16325c;
+  letter-spacing: 0.06em;
+}
+
+.subtitle {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* ==========================================================================
+   BARRA DE HERRAMIENTAS Y ACCIONES
+   ========================================================================== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-box input {
+  padding: 7px 12px 7px 32px;
+  font-size: 0.85rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 20px;
+  width: 220px;
+  outline: none;
+  transition: all 0.2s ease;
+  background-color: #f8fafc;
+}
+
+.search-box input:focus {
+  width: 260px;
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 0.9rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.btn-group {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 13px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  background: transparent;
+  color: #475569;
+  user-select: none;
+}
+
+.btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn.active {
+  background: #ffffff;
+  color: #1e3a5f;
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+.btn-secondary:hover {
+  background: #cbd5e1;
+  color: #0f172a;
+}
+
+.btn-light {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+}
+.btn-light:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.icon-btn {
+  padding: 7px 10px;
+  font-size: 0.95rem;
+}
+
+/* ==========================================================================
+   ÁREA DE TRABAJO DEL GRAFO (CANVAS CYTOSCAPE)
+   ========================================================================== */
+.main-viewport {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+#cy {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: var(--bg-canvas);
+  background-image: 
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: 0 0;
+}
+
+#cy.no-grid {
+  background-image: none;
+}
+
+/* ==========================================================================
+   BARRA INFERIOR DE ESTADO Y LEYENDA
+   ========================================================================== */
+.status-bar {
+  position: absolute;
+  bottom: 16px;
+  left: 24px;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 8px 18px;
+  font-size: 0.82rem;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: var(--shadow-md);
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.legend-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.legend-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  display: inline-block;
+}
+
+.legend-dot.base { background: var(--node-blue); }
+.legend-dot.actual { background: var(--node-yellow); }
+.legend-dot.crisis { background: var(--node-red); }
+.legend-dot.nurse { background: var(--node-green-bright); }
+.legend-dot.future { background: var(--node-green-dark); }
+
+.status-hint {
+  color: #2563eb;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-left: 8px;
+  padding-left: 12px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.floating-nav {
+  position: absolute;
+  bottom: 16px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 10;
+}
+
+.floating-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: all 0.15s ease;
+}
+
+.floating-btn:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+}
+
+/* ==========================================================================
+   VENTANAS MODALES (OVERLAY Y DIALOGS)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.modal-overlay.open {
+  display: flex;
+}
+
+.modal-dialog {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalScaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.93) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-detail-dialog {
+  max-width: 950px;
+}
+
+.modal-geo-dialog {
+  max-width: 1100px;
+}
+
+/* Cabecera del Modal */
+.modal-header {
+  padding: 18px 26px;
+  border-bottom: 1.5px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background: #ffffff;
+}
+
+.modal-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.node-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.73rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.node-badge.base { background: #e0f2fe; color: #0369a1; }
+.node-badge.actual { background: #fef3c7; color: #b45309; }
+.node-badge.crisis { background: #fee2e2; color: #b91c1c; }
+.node-badge.solucion { background: #dcfce7; color: #15803d; }
+.node-badge.pronostico { background: #ecfdf5; color: #047857; }
+
+.modal-heading {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.35;
+}
+
+.close-circle-btn {
+  background: #f1f5f9;
+  border: none;
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  font-size: 1.15rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.close-circle-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+  transform: rotate(90deg);
+}
+
+/* Cuerpo del Modal */
+.modal-body {
+  padding: 24px 28px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Tarjeta Destacada de Concepto Clave */
+.key-concept-card {
+  background: linear-gradient(135deg, #f0f7ff 0%, #e6f0fa 100%);
+  border: 1.5px solid #bfdbfe;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+}
+
+.key-concept-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.key-concept-tag {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #1d4ed8;
+}
+
+.key-concept-text {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* Secciones del Modal */
+.detail-section {
+  margin-bottom: 22px;
+}
+
+.detail-section-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-section-text {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: #334155;
+  text-align: justify;
+}
+
+/* Grid de Evidencia Cuantitativa */
+.evidence-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+
+.evidence-card {
+  background: #f8fafc;
+  border-left: 4px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+  padding: 12px 14px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #1e293b;
+  border-top: 1px solid #f1f5f9;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.evidence-card.japan { border-left-color: #ef4444; }
+.evidence-card.korea { border-left-color: #3b82f6; }
+.evidence-card.china { border-left-color: #eab308; }
+.evidence-card.nurse { border-left-color: #10b981; }
+
+.evidence-card strong {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+/* Cajas de Citas */
+.quote-box {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-style: italic;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #334155;
+  border-left: 3.5px solid #64748b;
+  margin-top: 8px;
+}
+
+.quote-author {
+  display: block;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 0.77rem;
+  color: #64748b;
+  margin-top: 6px;
+  text-align: right;
+}
+
+/* Tarjeta de Acción de Enfermería General */
+.nurse-action-card {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 12px;
+  padding: 16px 18px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.nurse-action-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.nurse-action-content strong {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #166534;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.nurse-action-content p {
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #14532d;
+}
+
+/* ==========================================================================
+   COMPONENTES ESPECIALES DEL REPORTE 2040: LOS 4 PILARES Y BIFURCACIÓN
+   ========================================================================== */
+
+/* Grid de los 4 Pilares de Enfermería (Nodo G) */
+.four-pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.pillar-card {
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pillar-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pillar-num {
+  background: #16a34a;
+  color: #ffffff;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.pillar-title {
+  font-size: 0.88rem;
+  font-weight: 800;
+  color: #14532d;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pillar-desc {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: #166534;
+}
+
+/* Comparativa de Bifurcación Escenarios 2040 (Nodo H) */
+.scenarios-comparison {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.scenario-col {
+  border-radius: 12px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.scenario-col.distopic {
+  background: #fff5f5;
+  border: 1.8px solid #fca5a5;
+}
+
+.scenario-col.transformative {
+  background: #f0fdf4;
+  border: 1.8px solid #86efac;
+}
+
+.scenario-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.scenario-badge.distopic {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.scenario-badge.transformative {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.scenario-col h4 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.scenario-col.distopic h4 { color: #991b1b; }
+.scenario-col.transformative h4 { color: #166534; }
+
+.scenario-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.scenario-list li {
+  font-size: 0.88rem;
+  line-height: 1.5;
+  position: relative;
+  padding-left: 18px;
+}
+
+.scenario-col.distopic .scenario-list li::before {
+  content: "⚠️";
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+}
+
+.scenario-col.transformative .scenario-list li::before {
+  content: "✨";
+  position: absolute;
+  left: 0;
+  font-size: 0.8rem;
+}
+
+/* Miniatura Geográfica en Modal */
+.geo-preview-box {
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.geo-preview-box:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.geo-preview-thumb {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+}
+
+.geo-preview-banner {
+  background: rgba(15, 23, 42, 0.88);
+  color: #ffffff;
+  padding: 10px 16px;
+  font-size: 0.84rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.badge-pill {
+  background: #2563eb;
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+/* Pie del Modal */
+.modal-footer {
+  padding: 14px 28px;
+  border-top: 1.5px solid #f1f5f9;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-nav-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.step-indicator {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 90px;
+  text-align: center;
+}
+
+.modal-action-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Modal Geográfico Grande */
+.geo-large-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+}
+
+.geo-legend-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: #334155;
+  margin-top: 14px;
+}
+
+/* Tooltip nativo */
+.cy-tooltip {
+  position: absolute;
+  background: rgba(15, 23, 42, 0.92);
+  color: #ffffff;
+  padding: 7px 14px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 40;
+  display: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-md);
+  transform: translate(-50%, -125%);
+}
+
+/* Notificación Toast */
+.toast-msg {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #ffffff;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  box-shadow: var(--shadow-lg);
+  z-index: 150;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.25s ease;
+  pointer-events: none;
+}
+
+.toast-msg.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD Y AJUSTES
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .modal-dialog {
+    max-height: 92vh;
+  }
+  .search-box input {
+    width: 170px;
+  }
+  .scenarios-comparison {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 16px;
+  }
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .status-bar {
+    display: none;
+  }
+  .modal-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

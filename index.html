@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>La Brújula de Nuestra Región: Asia Oriental | Rol y Prospectiva de Enfermería 2040</title>
+  
+  <!-- Tipografías de Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Estilos del Mapa y UI -->
+  <link rel="stylesheet" href="style.css">
+  
+  <!-- Cytoscape.js local con fallback a CDN -->
+  <script src="cytoscape.min.js"></script>
+  <script>
+    if (typeof cytoscape === 'undefined') {
+      document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"><\/script>');
+    }
+  </script>
+</head>
+<body>
+
+  <!-- ====================================================================
+       CABECERA PRINCIPAL (ESTILO ESTRUCTURA DE LA BRÚJULA)
+       ==================================================================== -->
+  <header class="app-header">
+    <div class="title-container">
+      <h1 class="main-title">
+        LA BRÚJULA DE NUESTRA REGIÓN: <span class="region-underline">ASIA ORIENTAL</span>
+      </h1>
+      <p class="subtitle">
+        Modelo Causal Integrado: Geografía, Historia, Macrotendencias de Salud, Rol Actual y Prospectiva de Enfermería hacia 2040
+      </p>
+    </div>
+
+    <!-- Selector de Escenarios Narrativos -->
+    <div class="header-actions">
+      <div class="btn-group">
+        <button class="btn scenario-btn active" data-scenario="all" title="Ver todo el mapa">
+          🌐 Todo
+        </button>
+        <button class="btn scenario-btn" data-scenario="base" title="Ver Base Causal (A y B)">
+          📍 1. Base Causal
+        </button>
+        <button class="btn scenario-btn" data-scenario="actual" title="Ver Estado Actual y Crisis (C, D, E, F)">
+          ⚠️ 2. Crisis Actual
+        </button>
+        <button class="btn scenario-btn" data-scenario="nursing" title="Ver Los 4 Pilares del Rol Actual de Enfermería (Nodo G)">
+          👩‍⚕️ 3. Pilares de Enfermería
+        </button>
+        <button class="btn scenario-btn" data-scenario="prospectiva" title="Ver Prospectiva 2040: Bifurcación entre Inercia y Transformación (Nodo H)">
+          🔮 4. Prospectiva 2040
+        </button>
+        <button class="btn scenario-btn" data-scenario="inercial" title="Ver Ruta Inercial sin Intervención (C → H)">
+          📉 Ruta Inercial
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ====================================================================
+       ÁREA DEL GRAFO INTERACTIVO (CYTOSCAPE.JS CANVAS)
+       ==================================================================== -->
+  <main class="main-viewport">
+    <div id="cy"></div>
+
+    <!-- Tooltip Flotante -->
+    <div id="cyTooltip" class="cy-tooltip"></div>
+
+    <!-- Barra Inferior de Estado y Leyenda de Simbología -->
+    <div class="status-bar">
+      <span class="legend-badge">
+        <span class="legend-dot base"></span> 1. Base Causal (A, B)
+      </span>
+      <span class="legend-badge">
+        <span class="legend-dot actual"></span> 2. Estado Actual (D, C1-C3)
+      </span>
+      <span class="legend-badge">
+        <span class="legend-dot crisis"></span> Impacto en Salud (E, F)
+      </span>
+      <span class="legend-badge">
+        <span class="legend-dot nurse"></span> 3. Enfermería (G)
+      </span>
+      <span class="legend-badge">
+        <span class="legend-dot future"></span> Prospectiva 2040 (H)
+      </span>
+      <span class="status-hint">
+        💡 Cada figura contiene sus ideas clave visibles sin hacer clic. Haz clic en cualquier forma para abrir el desglose empírico y prospectivo
+      </span>
+    </div>
+
+    <!-- Botones Flotantes de Navegación -->
+    <div class="floating-nav">
+      <button class="floating-btn" id="zoomInBtn" title="Acercar">+</button>
+      <button class="floating-btn" id="zoomOutBtn" title="Alejar">−</button>
+      <button class="floating-btn" id="fitBtn" title="Ajustar a la pantalla">⛶</button>
+    </div>
+  </main>
+
+  <!-- ====================================================================
+       VENTANA MODAL EXPANDIBLE DE DETALLE DE NODO
+       ==================================================================== -->
+  <div id="nodeDetailModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalNodeTitle">
+    <div class="modal-dialog modal-detail-dialog">
+      <!-- Cabecera del Modal -->
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span id="modalNodeBadge" class="node-badge base">SECCIÓN</span>
+          <h2 id="modalNodeTitle" class="modal-heading">Título del Nodo</h2>
+        </div>
+        <button id="modalCloseBtn" class="close-circle-btn" title="Cerrar ventana modal (Esc)">✕</button>
+      </div>
+
+      <!-- Cuerpo del Modal -->
+      <div class="modal-body modal-detail-body">
+        <!-- Tarjeta de Concepto Clave -->
+        <div class="key-concept-card">
+          <div class="key-concept-header">
+            <span class="key-concept-tag">📌 Concepto Clave Sintético</span>
+          </div>
+          <p id="modalNodeSummary" class="key-concept-text"></p>
+        </div>
+
+        <!-- Miniatura Geográfica Integrada (Exclusiva Nodo A) -->
+        <div id="modalGeoContainer" class="geo-preview-box" style="display: none;" title="Haz clic para ver el mapa geográfico en máxima resolución">
+          <img src="ilustracion_geografica_asia_oriental.jpeg" alt="Ilustración Geográfica de Asia Oriental" class="geo-preview-thumb">
+          <div class="geo-preview-banner">
+            <span>🗾 <strong>Ilustración Cartográfica:</strong> Cuencas de Yangtsé y Amarillo, Gobi, Tíbet y Megarregiones Costeras</span>
+            <span class="badge-pill">🔍 Ver en Alta Resolución</span>
+          </div>
+        </div>
+
+        <!-- Contenedor Especial Dinámico para Nodo G (Los 4 Pilares) y Nodo H (Bifurcación 2040) -->
+        <div id="modalSpecialSection" class="detail-section" style="display: none;">
+          <h3 id="modalSpecialTitle" class="detail-section-title">🌟 Marco Estratégico</h3>
+          <div id="modalSpecialContent"></div>
+        </div>
+
+        <!-- Mecanismo Causal y Desarrollo Conceptual -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">📖 Fundamento y Mecanismo Causal</h3>
+          <p id="modalNodeDescription" class="detail-section-text"></p>
+        </div>
+
+        <!-- Evidencia Cuantitativa & Datos Duros Regionales -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">📊 Evidencia Cuantitativa & Datos Duros Oficiales</h3>
+          <div id="modalEvidenceList" class="evidence-grid"></div>
+        </div>
+
+        <!-- Citas Textuales Verificables -->
+        <div class="detail-section" id="modalQuoteContainer">
+          <h3 class="detail-section-title">📜 Fuentes Primarias y Directrices Rectoras</h3>
+          <div id="modalQuoteBox"></div>
+        </div>
+
+        <!-- Implicaciones Críticas para Enfermería y Salud Pública -->
+        <div class="detail-section">
+          <h3 class="detail-section-title">👩‍⚕️ Rol e Implicaciones de Enfermería</h3>
+          <div class="nurse-action-card">
+            <div class="nurse-action-icon">🩺</div>
+            <div class="nurse-action-content">
+              <strong>Liderazgo y Práctica Transformadora</strong>
+              <p id="modalNursingText"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pie del Modal con Navegación Secuencial -->
+      <div class="modal-footer">
+        <div class="modal-nav-group">
+          <button id="modalPrevBtn" class="btn btn-secondary" title="Ver nodo anterior en la secuencia causal">
+            ⬅️ Anterior
+          </button>
+          <span id="modalStepIndicator" class="step-indicator">Paso 1 de 11</span>
+          <button id="modalNextBtn" class="btn btn-secondary" title="Ver siguiente nodo en la secuencia causal">
+            Siguiente ➡️
+          </button>
+        </div>
+
+        <div class="modal-action-group">
+          <button id="modalTracePathBtn" class="btn btn-primary" title="Resaltar la ruta causal completa en el mapa conceptual">
+            ⚡ Rastrear en el Mapa
+          </button>
+          <button id="modalDoneBtn" class="btn btn-light" title="Cerrar ventana">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================================
+       MODAL DE ILUSTRACIÓN GEOGRÁFICA EN ALTA RESOLUCIÓN
+       ==================================================================== -->
+  <div id="geoModal" class="modal-overlay" role="dialog" aria-modal="true">
+    <div class="modal-dialog modal-geo-dialog">
+      <div class="modal-header">
+        <h3 class="modal-heading">🗺️ Ilustración Geográfica Regional: Asia Oriental</h3>
+        <button id="geoModalClose" class="close-circle-btn" title="Cerrar ventana (Esc)">✕</button>
+      </div>
+      <div class="modal-body modal-geo-body">
+        <img src="ilustracion_geografica_asia_oriental.jpeg" alt="Mapa Ilustrado de Asia Oriental: China, Mongolia, Japón, Corea, Taiwán" class="geo-large-img">
+        <div class="geo-legend-box">
+          <p><strong>Configuración Bio-Espacial Estratégica:</strong> Se destacan las grandes cuencas fluviales de los ríos Yangtsé (Chang Jiang) y Amarillo (Huang He), el Desierto de Gobi y la Meseta del Tíbet ("El Tercer Polo"), el archipiélago japonés con el Monte Fuji, la península de Corea y los nodos costeros de Taiwán, Hong Kong y Macao.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Notificación Toast -->
+  <div id="toastMsg" class="toast-msg">Mensaje informativo</div>
+
+  <!-- Lógica de la Aplicación -->
+  <script src="app.js"></script>
+</body>
+</html>
